@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper  namespace="com.example.demo.demoboot2.dao.UserMapper">
+    <insert id="addUser" parameterType="com.example.demo.demoboot2.para.User">
+        INSERT INTO t_user (uname, pwd)
+        VALUES
+        (#{uname}, #{pwd})
+    </insert>
+    <delete id="delUser" parameterType="com.example.demo.demoboot2.para.User">
+        DELETE
+        FROM
+        t_user
+        WHERE id = #{id}
+    </delete>
+    <update id="updateUser" parameterType="com.example.demo.demoboot2.para.User">
+        UPDATE
+        t_user
+        SET
+        uname = #{uname},
+        pwd = #{pwd}
+        WHERE id = #{id}
+    </update>
+    <sql id="selectSql">
+        id, uname, pwd
+    </sql>
+    <select id="queryUser" parameterType="com.example.demo.demoboot2.para.User">
+        SELECT
+        <include refid="selectSql"/>
+        FROM t_user
+        WHERE
+        id = #{id}
+    </select>
+    <select id="queryAllUser">
+        SELECT
+        <include refid="selectSql"/>
+        FROM t_user
+    </select>
+</mapper>
