@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.demoboot2.dao.OrderMapper">
+    <resultMap id="orderList" type="com.example.demo.demoboot2.vo.OrderVO">
+        <id property="id" column="id"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="productCode" column="product_code"/>
+        <result property="productName" column="product_name"/>
+        <result property="price" column="price"/>
+        <collection property="childList" ofType="com.example.demo.demoboot2.vo.OrderChildVO" column="order_no">
+            <id property="id" column="cid"/>
+            <result property="orderNo" column="order_no"/>
+            <result property="brandName" column="brand_name"/>
+            <result property="price" column="price"/>
+            <result property="created" column="created"/>
+            <result property="state" column="state"/>
+        </collection>
+    </resultMap>
+
+    <select id="queryOrderList" resultMap="orderList" parameterType="java.lang.String">
+
+        SELECT torder.`id`,torder.`order_no`,torder.`product_name` ,
+        torder.`product_code` ,torder.`price`,
+        toc.`id` AS cid,toc.`order_no` AS orderNo,toc.`brand_name`,
+        toc.`price`,toc.`created`,toc.`state`
+        FROM `t_normal_order` torder
+        INNER JOIN `t_normal_order_child` toc ON torder.`order_no` = toc.`order_no`
+        <where>
+            <if test="orderNo!=null">
+                torder.`order_no` = #{orderNo}
+            </if>
+        </where>
+        LIMIT 0,20
+    </select>
+</mapper>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.demoboot2.dao.ProductMapper">
+    <resultMap id="productDetail" type="com.example.demo.demoboot2.vo.ProductVO">
+        <id property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="describe" column="describe"/>
+        <result property="officialCharge" column="official_charge"/>
+        <result property="serviceCharge" column="service_charge"/>
+        <result property="serviceChargeVip" column="service_charge_vip"/>
+        <result property="parent" column="parent"/>
+        <collection property="childList" ofType="com.example.demo.demoboot2.vo.ProductVO" column="id">
+            <id property="id" column="tid"/>
+            <result property="code" column="tcode"/>
+            <result property="name" column="tname"/>
+            <result property="describe" column="tdescribe"/>
+            <result property="officialCharge" column="tofficial_charge"/>
+            <result property="serviceCharge" column="tservice_charge"/>
+            <result property="serviceChargeVip" column="stervice_charge_vip"/>
+            <result property="parent" column="tparent"/>
+            <collection property="childList" ofType="com.example.demo.demoboot2.vo.ProductVO" column="tid">
+                <id property="id" column="cid"/>
+                <result property="code" column="ccode"/>
+                <result property="name" column="cname"/>
+                <result property="describe" column="cdescribe"/>
+                <result property="officialCharge" column="cofficial_charge"/>
+                <result property="serviceCharge" column="cservice_charge"/>
+                <result property="serviceChargeVip" column="stervice_charge_vip"/>
+                <result property="parent" column="cparent"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <select id="queryProductList" resultMap="productDetail" parameterType="com.example.demo.demoboot2.form.ProductForm">
+        SELECT ttt.`id`,ttt.`code`,ttt.`name` , ttt.`describe`,ttt.`official_charge`,ttt.`service_charge`,ttt.`service_charge_vip`,ttt.`parent`,
+        ttd.`id`  AS tid,ttd.`code` AS tcode,ttd.`name` AS tname, ttd.`describe` AS tdescribe,ttd.`official_charge` AS tofficial_charge,ttd.`service_charge` AS tservice_charge,ttd.`service_charge_vip` AS tservice_charge_vip,ttd.`parent` AS tparent
+        ,ttc.`id`  AS cid,ttc.`code` AS ccode,ttc.`name` AS cname, ttc.`describe` AS cdescribe,ttc.`official_charge` AS cofficial_charge,ttc.`service_charge` AS cservice_charge,ttc.`service_charge_vip` AS cservice_charge_vip,ttc.`parent` AS cparent
+        FROM
+        (SELECT  tpro.`id`,tpro.`code`,tpro.`name` , tpro.`describe`,tpro.`official_charge`,tpro.`service_charge`,tpro.`service_charge_vip`,tpro.`parent`
+        FROM `t_product` tpro WHERE  tpro.`level` = 1 ) AS  ttt
+        LEFT JOIN  (
+        SELECT  tpro.`id`,tpro.`code`,tpro.`name` , tpro.`describe`,tpro.`official_charge`,tpro.`service_charge`,tpro.`service_charge_vip`,tpro.`parent`
+        FROM `t_product` tpro WHERE  tpro.`level` = 2)  AS ttd ON ttt.id = ttd.parent
+        LEFT JOIN (
+        SELECT  tpro.`id`,tpro.`code`,tpro.`name` , tpro.`describe`,tpro.`official_charge`,tpro.`service_charge`,tpro.`service_charge_vip`,tpro.`parent`
+        FROM `t_product` tpro WHERE  tpro.`level` = 3
+        ) AS ttc
+        ON ttd.id = ttc.parent
+        <where>
+            <if test="id!=null">
+                AND ttt.id = #{id}
+            </if>
+            <if test="parent!=null">
+                AND ttt.parent = #{parent}
+            </if>
+            <if test="code!=null">
+                AND ttt.code = #{code}
+            </if>
+        </where>
+        ORDER by ttt.id ASC
+    </select>
+</mapper> 
